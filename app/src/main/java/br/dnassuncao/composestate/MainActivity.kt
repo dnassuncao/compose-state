@@ -25,18 +25,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BoxScreen()
+            var (count, onCountChange ) = remember { mutableStateOf(0) }
+            BoxScreen(count) { newValue -> onCountChange(newValue) }
         }
     }
 }
 
 @Composable
-fun BoxScreen() {
+fun BoxScreen(count: Int, onCountChange: (Int) -> Unit) {
 
     val boxSize = 400.dp
-    var count by remember {
-        mutableStateOf(0)
-    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()) {
         Box(
@@ -59,14 +57,14 @@ fun BoxScreen() {
             }
         }
 
-        OutlinedTextField(value = "${count}", onValueChange = {})
+        OutlinedTextField(value = "$count", onValueChange = {})
 
         Row {
-            Button(onClick = { count++ }, modifier = Modifier.padding(8.dp)) {
+            Button(onClick = { onCountChange(count + 1) }, modifier = Modifier.padding(8.dp)) {
                 Text(text = "Increase")
             }
             Button(
-                onClick = { count = if (count <= 0) 0 else count - 1 },
+                onClick = { onCountChange ( if (count <= 0) 0 else count - 1 ) },
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = "Decrease")
@@ -78,5 +76,6 @@ fun BoxScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewBoxScreen() {
-    BoxScreen()
+    var count by remember { mutableStateOf(0) }
+    BoxScreen(count) { newCount -> count = newCount }
 }
